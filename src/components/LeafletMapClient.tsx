@@ -10,7 +10,16 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Waves, AlertTriangle, Mountain, Flame, Siren } from "lucide-react";
+import {
+  Waves,
+  AlertTriangle,
+  Mountain,
+  Flame,
+  Siren,
+  Users,
+  Heart,
+  Phone,
+} from "lucide-react";
 
 if (typeof window !== "undefined") {
   delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -85,9 +94,10 @@ interface Posko {
   lng: number;
   disasterType: string;
   urgentNeeds: string[];
-  volunteers: number;
+  volunteersCount: number;
   victims: number;
   contact: string;
+  description: string;
 }
 
 interface Props {
@@ -115,42 +125,119 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
           position={[p.lat, p.lng]}
           icon={getLucideIcon(p.disasterType)}
         >
-          <Popup>
-            <div className="p-3 max-w-xs">
-              <h3 className="font-bold text-lg mb-2">{p.name}</h3>
-              <p className="text-sm">
-                <strong>Jenis:</strong> {p.disasterType.replace(/_/g, " ")}
-              </p>
-              {p.urgentNeeds.length > 0 && (
-                <p className="text-sm text-red-600 font-medium mt-2">
-                  Butuh: {p.urgentNeeds.join(", ")}
-                </p>
-              )}
-              <div className="grid grid-cols-2 gap-3 mt-3">
-                <div className="bg-blue-50 rounded-lg p-3 text-center">
-                  <p className="text-2xl font-bold text-blue-700">
-                    {p.volunteers}
-                  </p>
-                  <p className="text-xs">Relawan</p>
-                </div>
-                <div className="bg-red-50 rounded-lg p-3 text-center">
-                  <p className="text-2xl font-bold text-red-700">{p.victims}</p>
-                  <p className="text-xs">Korban</p>
+          <Popup maxWidth={400} minWidth={300} closeButton={true}>
+            <div className="w-full max-w-sm font-sans">
+              <div
+                className={`p-4 rounded-t-2xl text-white font-bold text-center text-lg shadow-lg
+      ${
+        p.disasterType === "banjir"
+          ? "bg-blue-600"
+          : p.disasterType === "gempa_bumi"
+          ? "bg-red-600"
+          : p.disasterType === "longsor"
+          ? "bg-yellow-600"
+          : p.disasterType === "tsunami"
+          ? "bg-blue-800"
+          : p.disasterType === "gunung_api"
+          ? "bg-orange-600"
+          : p.disasterType === "kebakaran_hutan"
+          ? "bg-red-700"
+          : "bg-purple-600"
+      }`}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  {p.disasterType === "banjir" && <Waves className="w-7 h-7" />}
+                  {p.disasterType === "gempa_bumi" && (
+                    <AlertTriangle className="w-7 h-7" />
+                  )}
+                  {p.disasterType === "longsor" && (
+                    <Mountain className="w-7 h-7" />
+                  )}
+                  {p.disasterType === "tsunami" && (
+                    <Waves className="w-7 h-7" />
+                  )}
+                  {p.disasterType === "gunung_api" && (
+                    <Flame className="w-7 h-7" />
+                  )}
+                  {p.disasterType === "kebakaran_hutan" && (
+                    <Flame className="w-7 h-7" />
+                  )}
+                  {p.disasterType === "lainnya" && (
+                    <Siren className="w-7 h-7" />
+                  )}
+                  <span className="uppercase tracking-wider">
+                    {p.disasterType.replace(/_/g, " ")}
+                  </span>
                 </div>
               </div>
-              {p.contact && (
-                <p className="mt-3 text-sm">
-                  <strong>Kontak:</strong>{" "}
-                  <a
-                    href={`https://wa.me/${p.contact.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-600 font-bold underline"
-                  >
-                    {p.contact}
-                  </a>
-                </p>
-              )}
+
+              <div className="p-5 bg-white rounded-b-2xl max-h-96 overflow-y-auto">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4 leading-tight">
+                  {p.name}
+                </h3>
+
+                {p.urgentNeeds.length > 0 && (
+                  <div className="mb-5 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                    <p className="font-bold text-red-700 mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5" />
+                      Butuh Segera:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {p.urgentNeeds.map((need, i) => (
+                        <span
+                          key={i}
+                          className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-full"
+                        >
+                          {need}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 mb-5">
+                  <div className="bg-linear-to-br from-blue-50 to-blue-100 p-4 rounded-2xl text-center border-2 border-blue-200">
+                    <Users className="w-10 h-10 mx-auto text-blue-700 mb-2" />
+                    <p className="text-3xl font-bold text-blue-700">
+                      {p.volunteersCount}
+                    </p>
+                    <p className="text-sm text-gray-600">Relawan</p>
+                  </div>
+                  <div className="bg-linear-to-br from-red-50 to-red-100 p-4 rounded-2xl text-center border-2 border-red-200">
+                    <Heart className="w-10 h-10 mx-auto text-red-700 mb-2" />
+                    <p className="text-3xl font-bold text-red-700">
+                      {p.victims}
+                    </p>
+                    <p className="text-sm text-gray-600">Pengungsi</p>
+                  </div>
+                </div>
+
+                {p.contact && (
+                  <div className="bg-green-50 p-4 rounded-xl border-2 border-green-200 mb-4">
+                    <p className="font-bold text-green-800 mb-2 flex items-center gap-2">
+                      <Phone className="w-5 h-5" />
+                      Kontak Koordinator
+                    </p>
+                    <a
+                      href={`https://wa.me/${p.contact.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-md transition"
+                    >
+                      <Phone className="w-5 h-5" />
+                      {p.contact}
+                    </a>
+                  </div>
+                )}
+
+                {p.description && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                      {p.description}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </Popup>
         </Marker>

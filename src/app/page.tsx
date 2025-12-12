@@ -19,7 +19,7 @@ interface Posko {
   lng: number;
   disasterType: string;
   urgentNeeds: string[];
-  volunteers: number;
+  volunteersCount: number;
   victims: number;
   contact: string;
   description: string;
@@ -302,7 +302,7 @@ export default function Home() {
                     }
                     className="w-full text-3xl font-bold bg-transparent text-center outline-none"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Korban</p>
+                  <p className="text-sm text-gray-600 mt-1">Pengungsi</p>
                 </div>
               </div>
 

@@ -7,7 +7,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Posko Bencana Sumatra",
+  title: "Posko Bencana",
   description: "Peta posko relawan bencana realtime",
 };
 

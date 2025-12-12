@@ -14,7 +14,7 @@ interface Posko {
   lng: number;
   disasterType: string;
   urgentNeeds: string[];
-  volunteers: number;
+  volunteersCount: number;
   victims: number;
   contact: string;
   description: string;
