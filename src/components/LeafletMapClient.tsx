@@ -125,68 +125,85 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
           position={[p.lat, p.lng]}
           icon={getLucideIcon(p.disasterType)}
         >
-          <Popup maxWidth={400} minWidth={300} closeButton={true}>
-            <div className="w-full max-w-sm font-sans">
+          <Popup
+            maxWidth={420}
+            minWidth={320}
+            closeButton={false}
+            className="custom-popup"
+          >
+            <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-white">
+              {/* Header Gradient + Icon Bencana */}
               <div
-                className={`p-4 rounded-t-2xl text-white font-bold text-center text-lg shadow-lg
+                className={`relative h-32 flex items-center justify-center text-white overflow-hidden
       ${
         p.disasterType === "banjir"
-          ? "bg-blue-600"
+          ? "bg-gradient-to-br from-blue-500 to-blue-700"
           : p.disasterType === "gempa_bumi"
-          ? "bg-red-600"
+          ? "bg-gradient-to-br from-red-600 to-red-800"
           : p.disasterType === "longsor"
-          ? "bg-yellow-600"
+          ? "bg-gradient-to-br from-amber-500 to-amber-700"
           : p.disasterType === "tsunami"
-          ? "bg-blue-800"
+          ? "bg-gradient-to-br from-cyan-600 to-blue-800"
           : p.disasterType === "gunung_api"
-          ? "bg-orange-600"
+          ? "bg-gradient-to-br from-orange-500 to-red-600"
           : p.disasterType === "kebakaran_hutan"
-          ? "bg-red-700"
-          : "bg-purple-600"
+          ? "bg-gradient-to-br from-red-700 to-orange-800"
+          : "bg-gradient-to-br from-purple-600 to-pink-600"
       }`}
               >
-                <div className="flex items-center justify-center gap-3">
-                  {p.disasterType === "banjir" && <Waves className="w-7 h-7" />}
-                  {p.disasterType === "gempa_bumi" && (
-                    <AlertTriangle className="w-7 h-7" />
-                  )}
-                  {p.disasterType === "longsor" && (
-                    <Mountain className="w-7 h-7" />
-                  )}
-                  {p.disasterType === "tsunami" && (
-                    <Waves className="w-7 h-7" />
-                  )}
-                  {p.disasterType === "gunung_api" && (
-                    <Flame className="w-7 h-7" />
-                  )}
-                  {p.disasterType === "kebakaran_hutan" && (
-                    <Flame className="w-7 h-7" />
-                  )}
-                  {p.disasterType === "lainnya" && (
-                    <Siren className="w-7 h-7" />
-                  )}
-                  <span className="uppercase tracking-wider">
+                {/* Background Pattern Halus */}
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
+                </div>
+
+                <div className="relative z-10 text-center">
+                  <div className="mb-2">
+                    {p.disasterType === "banjir" && (
+                      <Waves className="w-16 h-16 mx-auto" />
+                    )}
+                    {p.disasterType === "gempa_bumi" && (
+                      <AlertTriangle className="w-16 h-16 mx-auto" />
+                    )}
+                    {p.disasterType === "longsor" && (
+                      <Mountain className="w-16 h-16 mx-auto" />
+                    )}
+                    {p.disasterType === "tsunami" && (
+                      <Waves className="w-16 h-16 mx-auto" />
+                    )}
+                    {p.disasterType === "gunung_api" && (
+                      <Flame className="w-16 h-16 mx-auto" />
+                    )}
+                    {p.disasterType === "kebakaran_hutan" && (
+                      <Flame className="w-16 h-16 mx-auto" />
+                    )}
+                    {p.disasterType === "lainnya" && (
+                      <Siren className="w-16 h-16 mx-auto" />
+                    )}
+                  </div>
+                  <p className="text-xl font-bold tracking-wider uppercase">
                     {p.disasterType.replace(/_/g, " ")}
-                  </span>
+                  </p>
                 </div>
               </div>
 
-              <div className="p-5 bg-white rounded-b-2xl max-h-96 overflow-y-auto">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4 leading-tight">
+              {/* Body - BISA SCROLL TAPI SCROLLBAR DISEMBUNYIKAN */}
+              <div className="p-6 max-h-96 overflow-y-auto scrollbar-hidden">
+                {/* Nama Posko */}
+                <h3 className="text-2xl font-black text-gray-800 mb-4 text-center leading-tight">
                   {p.name}
                 </h3>
 
+                {/* Kebutuhan Mendesak */}
                 {p.urgentNeeds.length > 0 && (
-                  <div className="mb-5 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                    <p className="font-bold text-red-700 mb-2 flex items-center gap-2">
-                      <AlertTriangle className="w-5 h-5" />
-                      Butuh Segera:
+                  <div className="mb-6 p-5 bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl border-2 border-red-200">
+                    <p className="font-bold text-red-700 text-lg mb-3 text-center">
+                      Butuh Segera
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap justify-center gap-2">
                       {p.urgentNeeds.map((need, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-full"
+                          className="px-4 py-2 bg-red-600 text-white font-bold text-sm rounded-full shadow-md"
                         >
                           {need}
                         </span>
@@ -195,48 +212,53 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 mb-5">
-                  <div className="bg-linear-to-br from-blue-50 to-blue-100 p-4 rounded-2xl text-center border-2 border-blue-200">
-                    <Users className="w-10 h-10 mx-auto text-blue-700 mb-2" />
-                    <p className="text-3xl font-bold text-blue-700">
+                {/* Statistik Relawan & Korban */}
+                <div className="grid grid-cols-2 gap-5 mb-6">
+                  <div className="text-center p-5 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 rounded-3xl border-4 border-blue-200 shadow-inner">
+                    <Users className="w-12 h-12 mx-auto text-blue-700 mb-2" />
+                    <p className="text-4xl font-black text-blue-700">
                       {p.volunteersCount}
                     </p>
-                    <p className="text-sm text-gray-600">Relawan</p>
+                    <p className="text-sm font-bold text-blue-600 mt-1">
+                      RELAWAN
+                    </p>
                   </div>
-                  <div className="bg-linear-to-br from-red-50 to-red-100 p-4 rounded-2xl text-center border-2 border-red-200">
-                    <Heart className="w-10 h-10 mx-auto text-red-700 mb-2" />
-                    <p className="text-3xl font-bold text-red-700">
+                  <div className="text-center p-5 bg-gradient-to-br from-red-50 via-red-100 to-red-50 rounded-3xl border-4 border-red-200 shadow-inner">
+                    <Heart className="w-12 h-12 mx-auto text-red-700 mb-2" />
+                    <p className="text-4xl font-black text-red-700">
                       {p.victims}
                     </p>
-                    <p className="text-sm text-gray-600">Pengungsi</p>
+                    <p className="text-sm font-bold text-red-600 mt-1">
+                      PENGUNGSI
+                    </p>
                   </div>
                 </div>
 
+                {/* Kontak WhatsApp */}
                 {p.contact && (
-                  <div className="bg-green-50 p-4 rounded-xl border-2 border-green-200 mb-4">
-                    <p className="font-bold text-green-800 mb-2 flex items-center gap-2">
-                      <Phone className="w-5 h-5" />
-                      Kontak Koordinator
-                    </p>
+                  <div className="text-center mb-5">
                     <a
                       href={`https://wa.me/${p.contact.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-md transition"
+                      className="inline-flex items-center gap-3 px-8 py-5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-lg rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300"
                     >
-                      <Phone className="w-5 h-5" />
-                      {p.contact}
+                      <Phone className="w-7 h-7" />
+                      HUBUNGI KOORDINATOR
                     </a>
                   </div>
                 )}
 
+                {/* Deskripsi */}
                 {p.description && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  <div className="mt-5 p-5 bg-gradient-to-b from-gray-50 to-gray-100 rounded-2xl border border-gray-300">
+                    <p className="text-sm text-gray-700 leading-relaxed text-justify">
                       {p.description}
                     </p>
                   </div>
                 )}
+
+                {/* Tombol Tutup Keren */}
               </div>
             </div>
           </Popup>
