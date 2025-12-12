@@ -1,8 +1,9 @@
 "use client";
 
+import "leaflet/dist/leaflet.css";
+import "@/components/leaflet-fix";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import "leaflet/dist/leaflet.css";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((m) => m.MapContainer),
