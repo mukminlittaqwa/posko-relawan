@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "@/components/leaflet-fix";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { poskoIcon, disasterIcon } from "./mapIcons";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((m) => m.MapContainer),
@@ -82,7 +83,11 @@ export default function MapComponent({ poskos, onMapClick }: Props) {
       <MapEvents onClick={onMapClick} />
 
       {poskos.map((p) => (
-        <Marker key={p._id} position={[p.lat, p.lng]}>
+        <Marker
+          key={p._id}
+          position={[p.lat, p.lng]}
+          icon={disasterIcon ? disasterIcon : poskoIcon}
+        >
           <Popup>
             <div className="text-sm max-w-xs">
               <h3 className="font-bold text-base">{p.name}</h3>
