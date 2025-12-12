@@ -163,7 +163,7 @@ export default function Home() {
   return (
     <>
       {loading ? (
-        <div className="h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+        <div className="h-screen flex items-center justify-center bg-linear-to-br from-red-50 to-orange-50">
           <Loader2 className="w-16 h-16 animate-spin text-red-600" />
         </div>
       ) : (
