@@ -172,7 +172,7 @@ export default function Home() {
 
       <button
         onClick={openFormAndGetLocation}
-        className="fixed bottom-8 right-8 z-[9999] w-20 h-20 rounded-full bg-gradient-to-br from-red-600 to-orange-600 text-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300"
+        className="fixed bottom-8 right-8 z-9999 w-10 h-10 rounded-full bg-linear-to-br from-red-600 to-orange-600 text-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300"
       >
         <Plus className="w-12 h-12 mx-auto" strokeWidth={3} />
       </button>
