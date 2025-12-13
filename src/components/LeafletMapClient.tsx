@@ -245,6 +245,24 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                   <p className="text-sm sm:text-base text-gray-700 font-medium">
                     {formatLocation(p)}
                   </p>
+                  <p className="text-sm sm:text-base text-gray-700 font-medium">
+                    Akses lokasi :
+                  </p>
+                  <span
+                    className={`px-4 py-2 font-bold text-sm rounded-full shadow-md ${
+                      p.accessLocation === "akses_lancar"
+                        ? "bg-green-100 text-green-800 border-2 border-green-300"
+                        : p.accessLocation === "akses_terbatas"
+                        ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-300"
+                        : "bg-red-100 text-red-800 border-2 border-red-300"
+                    }`}
+                  >
+                    {p.accessLocation === "akses_lancar"
+                      ? "Akses Lancar"
+                      : p.accessLocation === "akses_terbatas"
+                      ? "Akses Terbatas"
+                      : "Terisolir"}
+                  </span>
                 </div>
 
                 <div className="mb-6 p-4 sm:p-5 bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 shadow-lg">
@@ -313,18 +331,6 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between bg-red-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-red-200">
-                    <div className="flex items-center gap-3 sm:gap-4">
-                      <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-red-600" />
-                      <span className="text-xs sm:text-sm font-semibold text-red-800">
-                        Pengungsi
-                      </span>
-                    </div>
-                    <span className="text-xl sm:text-2xl font-bold text-red-900">
-                      {p.victimsCount ?? 0}
-                    </span>
-                  </div>
-
                   <div className="flex items-center justify-between bg-purple-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-purple-200">
                     <div className="flex items-center gap-3 sm:gap-4">
                       <Stethoscope className="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" />
@@ -338,6 +344,83 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                   </div>
                 </div>
 
+                {/* Data Pengungsian - Tanpa Ikon, Rapi & Minimal */}
+                <div className="space-y-3 mb-6 sm:mb-7">
+                  {/* Jumlah Jiwa */}
+                  <div className="flex items-center justify-between bg-red-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-red-200">
+                    <span className="text-xs sm:text-sm font-semibold text-red-800">
+                      Jumlah Jiwa
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-red-900">
+                      {p.refugeesTotal ?? 0}
+                    </span>
+                  </div>
+
+                  {/* Jumlah KK */}
+                  <div className="flex items-center justify-between bg-orange-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-orange-200">
+                    <span className="text-xs sm:text-sm font-semibold text-orange-800">
+                      Jumlah KK
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-orange-900">
+                      {p.refugeesKK ?? 0}
+                    </span>
+                  </div>
+
+                  {/* Jenis Kelamin */}
+                  <p>Berdasarkan Jenis kelamin</p>
+                  <div className="flex items-center justify-between bg-blue-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-blue-200">
+                    <span className="text-xs sm:text-sm font-semibold text-blue-800">
+                      Laki-laki
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-blue-900">
+                      {p.refugeesMale ?? 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between bg-pink-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-pink-200">
+                    <span className="text-xs sm:text-sm font-semibold text-pink-800">
+                      Perempuan
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-pink-900">
+                      {p.refugeesFemale ?? 0}
+                    </span>
+                  </div>
+
+                  {/* Kelompok Usia */}
+                  <p>Berdasarkan Kelompok usia</p>
+                  <div className="flex items-center justify-between bg-yellow-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-yellow-200">
+                    <span className="text-xs sm:text-sm font-semibold text-yellow-800">
+                      Bayi (0-5 tahun)
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-yellow-900">
+                      {p.refugeesBaby ?? 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between bg-green-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-green-200">
+                    <span className="text-xs sm:text-sm font-semibold text-green-800">
+                      Anak & Remaja (6-17 tahun)
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-green-900">
+                      {p.refugeesChild ?? 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between bg-indigo-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-indigo-200">
+                    <span className="text-xs sm:text-sm font-semibold text-indigo-800">
+                      Dewasa (18-59 tahun)
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-indigo-900">
+                      {p.refugeesAdult ?? 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between bg-gray-100 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-gray-300">
+                    <span className="text-xs sm:text-sm font-semibold text-gray-800">
+                      Lansia (60+ tahun)
+                    </span>
+                    <span className="text-xl sm:text-2xl font-bold text-gray-900">
+                      {p.refugeesElderly ?? 0}
+                    </span>
+                  </div>
+                </div>
+
                 {p.contact && (
                   <div className="text-center mb-5">
                     <a
@@ -347,7 +430,7 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                       className="inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 text-white font-bold text-base sm:text-lg rounded-full shadow-2xl"
                     >
                       <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
-                      HUBUNGI VIA WHATSAPP
+                      CONTACT
                     </a>
                   </div>
                 )}
@@ -357,6 +440,26 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                     <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                       {p.description}
                     </p>
+                  </div>
+                )}
+
+                {(p.photoUrls ?? []).length > 0 && (
+                  <div className="mt-6 -mx-4 px-4">
+                    <p className="text-sm font-bold text-gray-700 mb-3 text-center">
+                      Foto Kondisi dan keadaan di posko
+                    </p>
+                    <div className="flex gap-3 overflow-x-auto scrollbar-hidden pb-2 snap-x snap-mandatory">
+                      {(p.photoUrls ?? []).map((url, index) => (
+                        <div key={index} className="shrink-0 snap-center">
+                          <img
+                            src={url}
+                            alt={`Foto posko ${index + 1}`}
+                            className="w-64 h-48 object-cover rounded-xl shadow-lg border-2 border-white"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

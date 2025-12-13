@@ -36,6 +36,8 @@ const needsList = [
   "Alat Mandi",
 ];
 
+const kondisiAkses = ["akses_lancar", "akses_terbatas", "terisolir"];
+
 const jenisPoskoList = ["logistik", "kesehatan", "dapur umum", "shelter"];
 
 interface Wilayah {
@@ -46,9 +48,10 @@ interface Wilayah {
 interface Props {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export default function ReportPoskoModal({ open, onClose }: Props) {
+export default function ReportPoskoModal({ open, onClose, onSuccess }: Props) {
   const { refetch } = usePoskos();
   const [locating, setLocating] = useState(false);
 
@@ -74,6 +77,15 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
     districtName: "",
     villageCode: "",
     villageName: "",
+    accessLocation: "",
+    refugeesTotal: "", // Jumlah jiwa pengungsi
+    refugeesKK: "", // Jumlah Kepala Keluarga
+    refugeesMale: "", // Laki-laki
+    refugeesFemale: "", // Perempuan
+    refugeesBaby: "", // Bayi (0-5 tahun)
+    refugeesChild: "", // Anak & Remaja (6-17 tahun)
+    refugeesAdult: "", // Dewasa (18-59 tahun)
+    refugeesElderly: "", // Lansia (60+ tahun)
   });
 
   const [provinces, setProvinces] = useState<Wilayah[]>([]);
@@ -85,6 +97,68 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
   const [loadingReg, setLoadingReg] = useState(false);
   const [loadingDist, setLoadingDist] = useState(false);
   const [loadingVill, setLoadingVill] = useState(false);
+
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+
+  const openCloudinaryWidget = () => {
+    if (!(window as any).cloudinary) {
+      const script = document.createElement("script");
+      script.src = "https://widget.cloudinary.com/v2.0/global/all.js";
+      script.async = true;
+      script.onload = () => initWidget();
+      document.body.appendChild(script);
+    } else {
+      initWidget();
+    }
+
+    function initWidget() {
+      (window as any).cloudinary
+        .createUploadWidget(
+          {
+            cloudName: "dgqlwjwot",
+            uploadPreset: "posko_relawan_unsigned",
+            multiple: true,
+            maxFiles: 6,
+            cropping: false,
+            folder: "posko-bencana",
+            clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+            maxImageFileSize: 5000000,
+            styles: {
+              palette: {
+                window: "#FFFFFF",
+                windowBorder: "#FF5A5F",
+                tabIcon: "#FF5A5F",
+                activeTabIcon: "#FF2600",
+                inactiveTabIcon: "#AAAAAA",
+                link: "#FF5A5F",
+                action: "#FF5A5F",
+                inProgress: "#FFD700",
+                complete: "#4CAF50",
+                error: "#F44336",
+                sourceBg: "#F5F5F5",
+              },
+              fonts: {
+                default: null,
+                "Roboto, sans-serif": {
+                  url: "https://fonts.googleapis.com/css?family=Roboto",
+                  active: true,
+                },
+              },
+            },
+          },
+          (error: any, result: any) => {
+            if (!error && result && result.event === "success") {
+              setPhotoUrls((prev) => [...prev, result.info.secure_url]);
+            }
+          }
+        )
+        .open();
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotoUrls((prev) => prev.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     if (open) {
@@ -126,6 +200,15 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
         districtName: "",
         villageCode: "",
         villageName: "",
+        accessLocation: "",
+        refugeesTotal: "", // Jumlah jiwa pengungsi
+        refugeesKK: "", // Jumlah Kepala Keluarga
+        refugeesMale: "", // Laki-laki
+        refugeesFemale: "", // Perempuan
+        refugeesBaby: "", // Bayi (0-5 tahun)
+        refugeesChild: "", // Anak & Remaja (6-17 tahun)
+        refugeesAdult: "", // Dewasa (18-59 tahun)
+        refugeesElderly: "",
       });
       setRegencies([]);
       setDistricts([]);
@@ -244,33 +327,55 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
       return;
     }
 
-    await fetch("/api/poskos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name,
-        partner: form.partner || null,
-        pic: form.pic || null,
-        lat: parseFloat(form.lat),
-        lng: parseFloat(form.lng),
-        disasterType: form.disasterType,
-        poskoTypes: form.poskoTypes,
-        urgentNeeds: form.urgentNeeds,
-        volunteersCount: Number(form.volunteers) || 0,
-        victimsCount: Number(form.victims) || 0,
-        medicalStaffCount: Number(form.medicalStaff) || 0,
-        contact: form.contact,
-        description: form.description,
-        // Wilayah disimpan semua (code + name)
-        province: { code: form.provinceCode, name: form.provinceName },
-        regency: { code: form.regencyCode, name: form.regencyName },
-        district: { code: form.districtCode, name: form.districtName },
-        village: { code: form.villageCode, name: form.villageName },
-      }),
-    });
+    try {
+      const res = await fetch("/api/poskos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          partner: form.partner || null,
+          pic: form.pic || null,
+          lat: parseFloat(form.lat),
+          lng: parseFloat(form.lng),
+          disasterType: form.disasterType,
+          poskoTypes: form.poskoTypes,
+          urgentNeeds: form.urgentNeeds,
+          volunteersCount: Number(form.volunteers) || 0,
+          victimsCount: Number(form.victims) || 0,
+          medicalStaffCount: Number(form.medicalStaff) || 0,
+          contact: form.contact,
+          description: form.description,
+          province: { code: form.provinceCode, name: form.provinceName },
+          regency: { code: form.regencyCode, name: form.regencyName },
+          district: { code: form.districtCode, name: form.districtName },
+          village: { code: form.villageCode, name: form.villageName },
+          photoUrls: photoUrls,
+          accessLocation: form.accessLocation,
+          refugeesTotal: Number(form.refugeesTotal) || 0,
+          refugeesKK: Number(form.refugeesKK) || 0,
+          refugeesMale: Number(form.refugeesMale) || 0,
+          refugeesFemale: Number(form.refugeesFemale) || 0,
+          refugeesBaby: Number(form.refugeesBaby) || 0,
+          refugeesChild: Number(form.refugeesChild) || 0,
+          refugeesAdult: Number(form.refugeesAdult) || 0,
+          refugeesElderly: Number(form.refugeesElderly) || 0,
+        }),
+      });
 
-    onClose();
-    refetch();
+      if (res.ok) {
+        alert("Posko berhasil dilaporkan!");
+        onClose();
+        setPhotoUrls([]);
+        onSuccess?.();
+        refetch();
+      } else {
+        const error = await res.json();
+        alert("Gagal menyimpan: " + (error.message || "Server error"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengirim data. Cek koneksi internet.");
+    }
   };
 
   if (!open) return null;
@@ -315,7 +420,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             </div>
           </div>
 
-          {/* Jenis Bencana */}
           <select
             value={form.disasterType}
             onChange={(e) => setForm({ ...form, disasterType: e.target.value })}
@@ -332,13 +436,11 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             ))}
           </select>
 
-          {/* === BARU: Dropdown Wilayah === */}
           <div className="space-y-4">
             <p className="font-bold text-gray-800 text-lg">
               Lokasi Administratif
             </p>
 
-            {/* Provinsi */}
             <div>
               <select
                 value={form.provinceCode}
@@ -372,7 +474,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
               </select>
             </div>
 
-            {/* Kabupaten/Kota */}
             <div>
               <select
                 value={form.regencyCode}
@@ -404,7 +505,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
               </select>
             </div>
 
-            {/* Kecamatan */}
             <div>
               <select
                 value={form.districtCode}
@@ -434,7 +534,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
               </select>
             </div>
 
-            {/* Desa/Kelurahan */}
             <div>
               <select
                 value={form.villageCode}
@@ -482,7 +581,30 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-2xl focus:border-orange-500 outline-none transition"
           />
 
-          {/* Jenis Posko */}
+          <div className="space-y-2">
+            <label className="block font-bold text-gray-800 text-lg pl-1">
+              Kondisi Akses lokasi
+            </label>
+            <select
+              value={form.accessLocation}
+              onChange={(e) =>
+                setForm({ ...form, accessLocation: e.target.value })
+              }
+              className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-2xl focus:border-red-500 outline-none transition-shadow focus:ring-4 focus:ring-red-200"
+              required
+              aria-label="Pilih jenis bencana"
+            >
+              <option value="" disabled>
+                Pilih keterangan akses lokasi
+              </option>
+              {kondisiAkses.map((t) => (
+                <option key={t} value={t.toLowerCase().replace(/ /g, "_")}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <p className="font-bold text-gray-800 mb-4 text-lg">Jenis Posko</p>
             <div className="grid grid-cols-2 gap-3">
@@ -505,7 +627,7 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-5 bg-blue-50 rounded-2xl">
               <Users className="w-10 h-10 mx-auto text-blue-600 mb-2" />
               <input
@@ -519,7 +641,7 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
               />
               <p className="text-sm text-gray-600 mt-1">Relawan</p>
             </div>
-            <div className="text-center p-5 bg-red-50 rounded-2xl">
+            {/* <div className="text-center p-5 bg-red-50 rounded-2xl">
               <Heart className="w-10 h-10 mx-auto text-red-600 mb-2" />
               <input
                 type="number"
@@ -529,7 +651,7 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
                 className="w-full text-3xl font-bold bg-transparent text-center outline-none"
               />
               <p className="text-sm text-gray-600 mt-1">Pengungsi</p>
-            </div>
+            </div> */}
             <div className="text-center p-5 bg-purple-50 rounded-2xl">
               <Stethoscope className="w-10 h-10 mx-auto text-purple-600 mb-2" />
               <input
@@ -542,6 +664,157 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
                 className="w-full text-3xl font-bold bg-transparent text-center outline-none"
               />
               <p className="text-sm text-gray-600 mt-1">Tenaga Kesehatan</p>
+            </div>
+          </div>
+
+          {/* Data Pengungsian */}
+          <div className="space-y-6">
+            <p className="font-bold text-gray-800 text-xl text-center bg-gradient-to-r from-red-100 to-orange-100 py-3 rounded-2xl">
+              Data Pengungsian
+            </p>
+
+            {/* Jumlah Jiwa & KK */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jumlah Jiwa Pengungsi
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="0"
+                  value={form.refugeesTotal}
+                  onChange={(e) =>
+                    setForm({ ...form, refugeesTotal: e.target.value })
+                  }
+                  className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-2xl focus:border-red-500 outline-none transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jumlah (KK)
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="0"
+                  value={form.refugeesKK}
+                  onChange={(e) =>
+                    setForm({ ...form, refugeesKK: e.target.value })
+                  }
+                  className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-2xl focus:border-red-500 outline-none transition"
+                />
+              </div>
+            </div>
+
+            {/* Jenis Kelamin */}
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-3">
+                Berdasarkan Jenis Kelamin
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 rounded-2xl p-4 text-center">
+                  <p className="text-sm text-blue-700 font-medium mb-2">
+                    Laki-laki
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={form.refugeesMale}
+                    onChange={(e) =>
+                      setForm({ ...form, refugeesMale: e.target.value })
+                    }
+                    className="w-full text-2xl font-bold text-blue-800 bg-transparent text-center outline-none"
+                  />
+                </div>
+                <div className="bg-pink-50 rounded-2xl p-4 text-center">
+                  <p className="text-sm text-pink-700 font-medium mb-2">
+                    Perempuan
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={form.refugeesFemale}
+                    onChange={(e) =>
+                      setForm({ ...form, refugeesFemale: e.target.value })
+                    }
+                    className="w-full text-2xl font-bold text-pink-800 bg-transparent text-center outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Berdasarkan Usia */}
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-3">
+                Berdasarkan Kelompok Usia
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-yellow-50 rounded-2xl p-4 text-center">
+                  <p className="text-sm text-yellow-700 font-medium mb-2">
+                    Bayi (0-5 th)
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={form.refugeesBaby}
+                    onChange={(e) =>
+                      setForm({ ...form, refugeesBaby: e.target.value })
+                    }
+                    className="w-full text-2xl font-bold text-yellow-800 bg-transparent text-center outline-none"
+                  />
+                </div>
+                <div className="bg-green-50 rounded-2xl p-4 text-center">
+                  <p className="text-sm text-green-700 font-medium mb-2">
+                    Anak & Remaja (6-17 th)
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={form.refugeesChild}
+                    onChange={(e) =>
+                      setForm({ ...form, refugeesChild: e.target.value })
+                    }
+                    className="w-full text-2xl font-bold text-green-800 bg-transparent text-center outline-none"
+                  />
+                </div>
+                <div className="bg-indigo-50 rounded-2xl p-4 text-center">
+                  <p className="text-sm text-indigo-700 font-medium mb-2">
+                    Dewasa (18-59 th)
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={form.refugeesAdult}
+                    onChange={(e) =>
+                      setForm({ ...form, refugeesAdult: e.target.value })
+                    }
+                    className="w-full text-2xl font-bold text-indigo-800 bg-transparent text-center outline-none"
+                  />
+                </div>
+                <div className="bg-gray-100 rounded-2xl p-4 text-center">
+                  <p className="text-sm text-gray-700 font-medium mb-2">
+                    Lansia (60+ th)
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={form.refugeesElderly}
+                    onChange={(e) =>
+                      setForm({ ...form, refugeesElderly: e.target.value })
+                    }
+                    className="w-full text-2xl font-bold text-gray-800 bg-transparent text-center outline-none"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -564,7 +837,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             />
           </div>
 
-          {/* Koordinat */}
           <div className="grid grid-cols-2 gap-4">
             <input
               value={form.lat}
@@ -580,7 +852,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             />
           </div>
 
-          {/* Kebutuhan Mendesak */}
           <div>
             <p className="font-bold text-gray-800 mb-4 text-lg">
               Kebutuhan Mendesak
@@ -603,7 +874,6 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             </div>
           </div>
 
-          {/* Deskripsi */}
           <textarea
             placeholder="Alamat lengkap atau keterangan penting..."
             rows={4}
@@ -612,7 +882,62 @@ export default function ReportPoskoModal({ open, onClose }: Props) {
             className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-2xl focus:border-green-500 outline-none resize-none"
           />
 
-          {/* Tombol */}
+          <div className="space-y-4">
+            <p className="font-bold text-gray-800 text-lg">
+              Foto Posko (Opsional, maks 6)
+            </p>
+
+            <button
+              type="button"
+              onClick={openCloudinaryWidget}
+              className="w-full py-6 border-3 border-dashed border-orange-500 rounded-2xl bg-orange-50 hover:bg-orange-100 transition flex flex-col items-center justify-center gap-3 text-orange-700 font-bold"
+            >
+              <svg
+                className="w-12 h-12"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              <span className="text-lg">Klik untuk Upload Foto</span>
+              <span className="text-sm font-normal">
+                JPG, PNG, WebP • Maks 5MB
+              </span>
+            </button>
+
+            {photoUrls.length > 0 && (
+              <div>
+                <p className="text-sm text-gray-600 mb-3">
+                  Foto terupload ({photoUrls.length}/6):
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {photoUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={url}
+                        alt={`Foto posko ${index + 1}`}
+                        className="w-full h-48 object-cover rounded-xl shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition flex items-center justify-center font-bold text-xl shadow-lg"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-4 pt-6">
             <button
               type="button"

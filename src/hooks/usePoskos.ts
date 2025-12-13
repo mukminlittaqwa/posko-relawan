@@ -21,6 +21,16 @@ export interface Posko {
   district?: { code: string; name: string } | null;
   village?: { code: string; name: string } | null;
   createdAt?: string;
+  photoUrls?: string[];
+  accessLocation?: string;
+  refugeesTotal?: string; // Jumlah jiwa pengungsi
+  refugeesKK?: string; // Jumlah Kepala Keluarga
+  refugeesMale?: string; // Laki-laki
+  refugeesFemale?: string; // Perempuan
+  refugeesBaby?: string; // Bayi (0-5 tahun)
+  refugeesChild?: string; // Anak & Remaja (6-17 tahun)
+  refugeesAdult?: string; // Dewasa (18-59 tahun)
+  refugeesElderly?: string;
 }
 
 export function usePoskos() {

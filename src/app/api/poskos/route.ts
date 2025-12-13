@@ -45,13 +45,23 @@ export async function POST(request: Request) {
       regency = null,
       district = null,
       village = null,
+      photoUrls = [],
+      accessLocation = "",
+      refugeesTotal = "", // Jumlah jiwa pengungsi
+      refugeesKK = "", // Jumlah Kepala Keluarga
+      refugeesMale = "", // Laki-laki
+      refugeesFemale = "", // Perempuan
+      refugeesBaby = "", // Bayi (0-5 tahun)
+      refugeesChild = "", // Anak & Remaja (6-17 tahun)
+      refugeesAdult = "", // Dewasa (18-59 tahun)
+      refugeesElderly = "",
     } = body;
 
-    if (!name || !lat || !lng) {
+    if (!name || !lat || !lng || !refugeesTotal || !accessLocation) {
       return NextResponse.json(
         {
           success: false,
-          message: "Nama posko, latitude, dan longitude wajib diisi",
+          message: "Wajib mengisi beberapa form",
         },
         { status: 400 }
       );
@@ -78,6 +88,7 @@ export async function POST(request: Request) {
       lng: parsedLng,
       disasterType,
       poskoTypes,
+      photoUrls,
       urgentNeeds,
       volunteersCount: Number(volunteersCount),
       victimsCount: Number(victimsCount),
@@ -88,6 +99,15 @@ export async function POST(request: Request) {
       regency,
       district,
       village,
+      accessLocation,
+      refugeesTotal, // Jumlah jiwa pengungsi
+      refugeesKK, // Jumlah Kepala Keluarga
+      refugeesMale, // Laki-laki
+      refugeesFemale, // Perempuan
+      refugeesBaby, // Bayi (0-5 tahun)
+      refugeesChild, // Anak & Remaja (6-17 tahun)
+      refugeesAdult, // Dewasa (18-59 tahun)
+      refugeesElderly,
       createdAt: new Date(),
     });
 
