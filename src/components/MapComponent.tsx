@@ -2,23 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { Posko } from "@/hooks/usePoskos";
 
 const LeafletMapClient = dynamic(() => import("./LeafletMapClient"), {
   ssr: false,
 });
-
-interface Posko {
-  _id: string;
-  name: string;
-  lat: number;
-  lng: number;
-  disasterType: string;
-  urgentNeeds: string[];
-  volunteersCount: number;
-  victims: number;
-  contact: string;
-  description: string;
-}
 
 interface Props {
   poskos: Posko[];
