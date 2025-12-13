@@ -173,16 +173,20 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
           position={[p.lat, p.lng]}
           icon={getLucideIcon(p.disasterType)}
         >
-          <Popup maxWidth={420} minWidth={320} closeButton={false}>
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-white">
-              {/* Header Bencana */}
+          <Popup
+            maxWidth={300}
+            minWidth={280}
+            closeButton={false}
+            className="custom-popup"
+          >
+            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-white w-full max-w-sm mx-auto">
               <div
                 className={`relative h-32 flex items-center justify-center text-white bg-linear-to-br ${getDisasterColor(
                   p.disasterType
                 )}`}
               >
                 <div className="absolute inset-0 opacity-20 bg-white/20 backdrop-blur-sm"></div>
-                <div className="relative z-10 text-center">
+                <div className="relative z-10 text-center px-4">
                   <div className="mb-2">
                     {p.disasterType === "banjir" && (
                       <Waves className="w-16 h-16 mx-auto" />
@@ -206,19 +210,17 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                       <Siren className="w-16 h-16 mx-auto" />
                     )}
                   </div>
-                  <p className="text-xl font-bold tracking-wider uppercase">
+                  <p className="text-lg sm:text-xl font-bold tracking-wider uppercase">
                     {p.disasterType.replace(/_/g, " ")}
                   </p>
                 </div>
               </div>
 
-              {/* Body Popup */}
-              <div className="p-6 max-h-96 overflow-y-auto scrollbar-hidden">
-                <h3 className="text-2xl font-black text-gray-800 text-center mb-4">
+              <div className="p-4 sm:p-6 max-h-96 overflow-y-auto scrollbar-hidden">
+                <h3 className="text-xl sm:text-2xl font-black text-gray-800 text-center mb-4">
                   {p.name}
                 </h3>
 
-                {/* Jenis Posko */}
                 {(p.poskoTypes ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-2 justify-center mb-5">
                     {(p.poskoTypes ?? []).map((type) => {
@@ -226,7 +228,7 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                       return (
                         <span
                           key={type}
-                          className={`px-4 py-2 rounded-full font-bold text-sm ${badge.bg} border-2 ${badge.text}`}
+                          className={`px-3 sm:px-4 py-2 rounded-full font-bold text-xs sm:text-sm ${badge.bg} border-2 ${badge.text}`}
                         >
                           {badge.label}
                         </span>
@@ -235,46 +237,44 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                   </div>
                 )}
 
-                {/* Lokasi Administratif */}
                 <div className="mb-5 p-4 bg-linear-to-rrom-teal-50 to-cyan-50 rounded-2xl border-2 border-teal-200">
                   <div className="flex items-center gap-2 text-teal-800 font-bold mb-2">
-                    <MapPinHouse className="w-6 h-6" />
+                    <MapPinHouse className="w-5 h-5 sm:w-6 sm:h-6" />
                     Lokasi
                   </div>
-                  <p className="text-gray-700 font-medium">
+                  <p className="text-sm sm:text-base text-gray-700 font-medium">
                     {formatLocation(p)}
                   </p>
                 </div>
 
-                {/* Informasi Koordinator */}
-                <div className="mb-6 p-5 bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 shadow-lg">
-                  <h4 className="font-bold text-indigo-800 text-lg mb-4 text-center flex items-center justify-center gap-2">
-                    <Building2 className="w-6 h-6" />
+                <div className="mb-6 p-4 sm:p-5 bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 shadow-lg">
+                  <h4 className="font-bold text-indigo-800 text-base sm:text-lg mb-4 text-center flex items-center justify-center gap-2">
+                    <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
                     Informasi Koordinator
                   </h4>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 bg-white/70 backdrop-blur-sm px-5 py-4 rounded-xl shadow">
-                      <div className="p-3 bg-indigo-100 rounded-full">
-                        <User className="w-7 h-7 text-indigo-600" />
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-sm px-4 sm:px-5 py-3 sm:py-4 rounded-xl shadow">
+                      <div className="p-2 sm:p-3 bg-indigo-100 rounded-full">
+                        <User className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm text-gray-600 font-medium">
+                        <p className="text-xs sm:text-sm text-gray-600 font-medium">
                           Penanggung Jawab (PIC)
                         </p>
-                        <p className="text-lg font-bold text-indigo-800">
+                        <p className="text-base sm:text-lg font-bold text-indigo-800">
                           {p.pic || "-"}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 bg-white/70 backdrop-blur-sm px-5 py-4 rounded-xl shadow">
-                      <div className="p-3 bg-purple-100 rounded-full">
-                        <Handshake className="w-7 h-7 text-purple-600" />
+                    <div className="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-sm px-4 sm:px-5 py-3 sm:py-4 rounded-xl shadow">
+                      <div className="p-2 sm:p-3 bg-purple-100 rounded-full">
+                        <Handshake className="w-6 h-6 sm:w-7 sm:h-7 text-purple-600" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm text-gray-600 font-medium">
+                        <p className="text-xs sm:text-sm text-gray-600 font-medium">
                           Mitra / Kolaborator
                         </p>
-                        <p className="text-lg font-bold text-purple-800">
+                        <p className="text-base sm:text-lg font-bold text-purple-800">
                           {p.partner || "-"}
                         </p>
                       </div>
@@ -282,17 +282,16 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                   </div>
                 </div>
 
-                {/* Kebutuhan Mendesak */}
                 {(p.urgentNeeds ?? []).length > 0 && (
-                  <div className="mb-6 p-5 bg-linear-to-r from-red-50 to-pink-50 rounded-2xl border-2 border-red-200">
-                    <p className="font-bold text-red-700 text-lg mb-3 text-center">
+                  <div className="mb-6 p-4 sm:p-5 bg-linear-to-r from-red-50 to-pink-50 rounded-2xl border-2 border-red-200">
+                    <p className="font-bold text-red-700 text-base sm:text-lg mb-3 text-center">
                       Butuh Segera
                     </p>
                     <div className="flex flex-wrap justify-center gap-2">
                       {(p.urgentNeeds ?? []).map((need, i) => (
                         <span
                           key={i}
-                          className="px-4 py-2 bg-red-600 text-white font-bold text-sm rounded-full shadow-md"
+                          className="px-3 sm:px-4 py-2 bg-red-600 text-white font-bold text-xs sm:text-sm rounded-full shadow-md"
                         >
                           {need}
                         </span>
@@ -301,41 +300,39 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                   </div>
                 )}
 
-                {/* Statistik - Rapi, Minimalis, Elegan */}
-                <div className="space-y-3 mb-7">
-                  {/* Relawan */}
-                  <div className="flex items-center justify-between bg-blue-50/80 backdrop-blur-sm px-5 py-3 rounded-xl border border-blue-200">
-                    <div className="flex items-center gap-4">
-                      <Users className="w-8 h-8 text-blue-600" />
-                      <span className="text-sm font-semibold text-blue-800">
+                <div className="space-y-3 mb-6 sm:mb-7">
+                  <div className="flex items-center justify-between bg-blue-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-blue-200">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <Users className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
+                      <span className="text-xs sm:text-sm font-semibold text-blue-800">
                         Relawan
                       </span>
                     </div>
-                    <span className="text-2xl font-bold text-blue-900">
+                    <span className="text-xl sm:text-2xl font-bold text-blue-900">
                       {p.volunteersCount ?? 0}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between bg-red-50/80 backdrop-blur-sm px-5 py-3 rounded-xl border border-red-200">
-                    <div className="flex items-center gap-4">
-                      <Heart className="w-8 h-8 text-red-600" />
-                      <span className="text-sm font-semibold text-red-800">
+                  <div className="flex items-center justify-between bg-red-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-red-200">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-red-600" />
+                      <span className="text-xs sm:text-sm font-semibold text-red-800">
                         Pengungsi
                       </span>
                     </div>
-                    <span className="text-2xl font-bold text-red-900">
+                    <span className="text-xl sm:text-2xl font-bold text-red-900">
                       {p.victimsCount ?? 0}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between bg-purple-50/80 backdrop-blur-sm px-5 py-3 rounded-xl border border-purple-200">
-                    <div className="flex items-center gap-4">
-                      <Stethoscope className="w-8 h-8 text-purple-600" />
-                      <span className="text-sm font-semibold text-purple-800">
+                  <div className="flex items-center justify-between bg-purple-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 rounded-xl border border-purple-200">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <Stethoscope className="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" />
+                      <span className="text-xs sm:text-sm font-semibold text-purple-800">
                         Tenaga Medis
                       </span>
                     </div>
-                    <span className="text-2xl font-bold text-purple-900">
+                    <span className="text-xl sm:text-2xl font-bold text-purple-900">
                       {p.medicalStaffCount ?? 0}
                     </span>
                   </div>
@@ -347,9 +344,9 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
                       href={`https://wa.me/${p.contact.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 px-8 py-4  text-white font-bold text-lg rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300"
+                      className="inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 text-white font-bold text-base sm:text-lg rounded-full shadow-2xl"
                     >
-                      <Phone className="w-7 h-7" />
+                      <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
                       HUBUNGI VIA WHATSAPP
                     </a>
                   </div>
@@ -357,7 +354,7 @@ export default function LeafletMapClient({ poskos, onMapClick }: Props) {
 
                 {p.description && (
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200">
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                       {p.description}
                     </p>
                   </div>
